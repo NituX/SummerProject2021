@@ -1,0 +1,139 @@
+import QtQuick 2.0
+import Felgo 3.0
+import"../common"
+import"../entities"
+
+BaseScene {
+    id: gameScene
+    //Keys.forwardTo: activeLevel.moveWithKeys
+    // the filename of the current level gets stored here, it is used for loading the
+    property string activeLevelFileName
+    // the currently loaded level gets stored here
+    property var activeLevel
+    property alias entContainer: container
+
+    sceneAlignmentX: "left"
+    sceneAlignmentY: "top"
+
+
+    // set the name of the current level, this will cause the Loader to load the corresponding level
+    function setLevel(fileName) {
+        activeLevelFileName = fileName
+    }
+
+    /*Text {
+        anchors.left: gameScene.gameWindowAnchorItem.left
+        anchors.leftMargin: 10
+        anchors.top: gameScene.gameWindowAnchorItem.top
+        anchors.topMargin: 10
+        color: "white"
+        font.pixelSize: 20
+        text: activeLevel !== undefined ? activeLevel.levelName : ""
+    }
+
+    MenuButton {
+        text: "Back to menu"
+        // anchor the button to the gameWindowAnchorItem to be on the edge of the screen on any device
+        anchors.right: gameScene.gameWindowAnchorItem.right
+        anchors.rightMargin: 10
+        anchors.top: gameScene.gameWindowAnchorItem.top
+        anchors.topMargin: 10
+        onClicked: {
+            backButtonPressed()
+            activeLevel = undefined
+            activeLevelFileName = ""
+        }
+    }*/
+
+    Camera {
+        id: camera
+        gameWindowSize: Qt.point(gameScene.gameWindowAnchorItem.width, gameScene.gameWindowAnchorItem.height)
+        entityContainer: container
+        //focusedObject: gameScene.activeLevel.player
+        limitLeft: 0
+        //limitRight: gameScene.activeLevel.width
+        limitTop: 0
+        //limitBottom: gameScene.activeLevel.height;
+    }
+
+
+    //    MouseArea {
+    //        id: gameMA
+    //        anchors.fill: gameScene
+    //        propagateComposedEvents: true
+    //        hoverEnabled: true
+
+    //        onClicked: shootPressed
+
+    //        onPositionChanged: {
+    //            //console.log("mouse position changed", mouse.x, mouse.y);
+    //            //console.log(gameScene.calculatePlayerRotation(mouse.x, mouse.y))
+    //            //            gameScene.rotatePlayer(mouse.x, mouse.y)
+    //            //            mouse.accepted = false;
+    //        }
+    //    }
+
+
+
+    Item {
+        id: container
+        transformOrigin: Item.TopLeft
+
+        PhysicsWorld {
+            id: world
+            running: true
+            z: 1000
+            // these are performance settings to avoid boxes colliding too far together
+            // set them as low as possible so it still looks good
+            updatesPerSecondForPhysics: 60
+            //velocityIterations: 5
+            //positionIterations: 5
+            // set this to true to see the debug draw of the physics system
+            // this displays all bodies, joints and forces which is great for debugging
+            debugDrawVisible: false
+
+        }
+
+        Loader {
+            id: loader
+            source: gameScene.activeLevelFileName !== "" ? "../levels/" + gameScene.activeLevelFileName : ""
+            onLoaded: {
+                gameScene.activeLevel = item
+
+
+                // since we did not define a width and height in the level item itself, we are doing it here
+                //item.width = gameScene.width
+                //item.height = gameScene.height
+
+                //item.width =1500
+                //item.height =1500
+
+                //parent.width = item.width
+                //parent.height = item.height
+                // store the loaded level as activeLevel for easier access
+                gameScene.activeLevel = item
+                camera.focusedObject = gameScene.activeLevel.character
+                camera.limitRight = gameScene.activeLevel.width
+                camera.limitBottom = gameScene.activeLevel.height
+                gameScene.Keys.forwardTo = activeLevel.moveWithKeys
+            }
+        }
+
+        //        Player {
+        //            id: player
+        //            transformOrigin: player.Center
+
+        //            x: 100
+        //            y: 100
+        //        }
+
+        //        Weapon_AK {
+        //            anchors.centerIn: player
+        //            anchors.verticalCenterOffset: -10
+        //            anchors.horizontalCenterOffset: 10
+        //            transformOrigin: Item.Center
+        //            rotation: player.rotation
+        //            z:2
+        //        }
+    }
+}
