@@ -6,14 +6,18 @@ EntityBase {
     entityId: "character"
     entityType: "character"
     id: character
+
     x: originX
     y: originY
 
+    property int maxSpeed: GameSettings.playerMaxSpeed
     property alias controller: twoAxisController
     property alias characterBody: characterBody
-    property alias characterWeapon: characterWeapon
-    property alias characterMuzzle: characterMuzzle
+//    property alias characterWeapon: characterWeapon
+//    property alias characterMuzzle: characterMuzzle
     property alias circleCollider: circleCollider
+    property double velocityX: twoAxisController.xAxis * maxSpeed
+    property double velocityY: twoAxisController.yAxis * (-maxSpeed)
     property double originX
     property double originY
 
@@ -30,14 +34,18 @@ EntityBase {
         source: "../../assets/Kypara.png"
     }
 
+    Text {
+        id: hp
+        anchors.centerIn: parent
+        text: player.hitPoints
+    }
+
+
     Rectangle {
         id: characterWeapon
-        x: characterBody.x + 20
-        y: characterBody.y
-        width: 1
-        height: 1
-        transformOrigin: Item.Left
+        transformOrigin: Item.TopLeft
         color: "transparent"
+        anchors.centerIn: player
 
         Image{
             id: characterMuzzle
@@ -55,28 +63,27 @@ EntityBase {
         x: -radius
         y: -radius
         categories: Circle.Category1
-        collidesWith: Box.Category1
-        bullet: true
+        collidesWith: Box.Category1 | Circle.category2
         sleepingAllowed: false
     }
 
-    BoxCollider {
-        id: boxCollider
-        bodyType: Body.Dynamic
-        width: characterMuzzle.width
-        height: characterMuzzle.height
-        anchors.centerIn: characterWeapon
-        categories: Box.Category2
-        collidesWith: Box.Category1
-        bullet: true
-        sleepingAllowed: false
-    }
+//    BoxCollider {
+//        id: boxCollider
+//        bodyType: Body.Dynamic
+//        width: characterMuzzle.width
+//        height: characterMuzzle.height
+//        anchors.centerIn: characterWeapon
+//        categories: Box.Category2
+//        collidesWith: Box.Category1
+//        bullet: true
+//        sleepingAllowed: false
+//    }
 
     MovementAnimation {
         target: character
         property: "x"
         running: true
-        velocity: twoAxisController.xAxis * 200
+        velocity: character.velocityX //twoAxisController.xAxis * maxSpeed
 
     }
 
@@ -84,7 +91,7 @@ EntityBase {
         target: character
         property: "y"
         running: true
-        velocity: twoAxisController.yAxis * (-200)
+        velocity: character.velocityY//twoAxisController.yAxis * (-maxSpeed)
     }
 
 }

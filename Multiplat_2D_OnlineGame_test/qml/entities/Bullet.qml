@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Felgo 3.0
+import"../entities"
 
 EntityBase {
     id: singleBullet
@@ -9,18 +10,23 @@ EntityBase {
 
     property point start
     property point velocity
+    property int damage: 20
     //property int bulletType //pistol, rifle etc...
 
     Rectangle {
-        width: 2
-        height: 2
         color: "black"
+        width: 4
+        height: 4
+        radius: width/2
         anchors.centerIn: parent
     }
 
-    BoxCollider {
-        id: boxCollider
-        anchors.fill: parent
+    CircleCollider {
+        id: bulletCollider
+        //anchors.fill: parent
+        radius: 2
+        x: -radius
+        y: -radius
         collisionTestingOnlyMode: true
         //        density: 0
         //        friction: 0
@@ -34,9 +40,14 @@ EntityBase {
             var otherEntityId = collidedEntity.entityId;
             var otherEntityParent = collidedEntity.parent;
 
-            if(otherEntityId.substring(0,6) === "player") {
+            if(otherEntityId.substring(0,4) === "char") {
                 singleBullet.destroy();
-                //player damage function call once implemented
+                otherEntityParent.getHit(damage);
+            }
+
+            else if (otherEntityId.substring(0,4) === "enem") {
+                singleBullet.destroy();
+                collidedEntity.getHit(damage);
             }
 
             else {

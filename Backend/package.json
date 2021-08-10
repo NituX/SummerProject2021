@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "box2d": "^1.0.0",
+    "socket.io": "^4.1.3"
+  }
+}

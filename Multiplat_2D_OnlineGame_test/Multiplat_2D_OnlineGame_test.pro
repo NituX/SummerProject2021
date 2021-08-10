@@ -3,7 +3,7 @@ CONFIG += felgo
 
 # uncomment this line to add the Live Client Module and use live reloading with your custom C++ code
 # for the remaining steps to build a custom Live Code Reload app see here: https://felgo.com/custom-code-reload-app/
-# CONFIG += felgo-live
+CONFIG += felgo-live
 
 # Project identifier and version
 # More information: https://felgo.com/doc/felgo-publishing/#project-configuration
@@ -40,7 +40,7 @@ DEPLOYMENTFOLDERS += assetsFolder
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp
 
-FELGO_PLUGINS +=
+# FELGO_PLUGINS +=
 
 android {
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
@@ -61,6 +61,8 @@ macx {
 }
 
 DISTFILES += \
+    qml/BalanceSettings.qml \
+    qml/GameSettings.qml \
     qml/common/BaseScene.qml \
     qml/common/LevelBase.qml \
     qml/common/MenuButton.qml \
@@ -69,13 +71,19 @@ DISTFILES += \
     qml/entities/Borders.qml \
     qml/entities/Bullet.qml \
     qml/entities/Character.qml \
+    qml/entities/Enemy.qml \
+    qml/entities/MonsterBullet.qml \
     qml/entities/Wall.qml \
     qml/entities/Weapon_AK.qml \
+    qml/jsScripts/GameLoop.js \
     qml/levels/Level1.qml \
     qml/levels/Level2.qml \
+    qml/qmldir \
     qml/scenes/GameNetworkScene.qml \
     qml/scenes/GameScene.qml \
     qml/scenes/MenuScene.qml \
     qml/scenes/MultiplayerScene.qml \
     qml/scenes/SelectWeaponScene.qml \
     qml/scenes/SettingsScene.qml
+
+STATECHARTS +=
