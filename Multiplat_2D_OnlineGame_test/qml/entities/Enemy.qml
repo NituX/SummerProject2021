@@ -5,75 +5,111 @@ import ".."
 
 EntityBase {
     entityId: "enemy"
-    entityType: "customEntity"
+    entityType: "enemy"
     id: enemyOrkki
-
-    //    x: originX
-    //    y: originY
-    width: 30
-    height: 30
-    rotation: getRandomCoords()
-
     transformOrigin: Item.TopLeft
 
-
-    property double originX
-    property double originY
     property int hitPoints: GameSettings.enemyLife
-    property bool playerInSight: false
     property int areaWidth: GameSettings.areaWidth
     property int areaHeight: GameSettings.areaHeight
-    property int speed: GameSettings.enemyMaxSpeed
-    property point velocity
-
-
+    property var target
+    property var world
+    property real lastTime: 0
 
     Image {
         id: orkki
         width: 30
         height: 30
-        anchors.fill: circleCollider
+        rotation: 90
+        anchors.centerIn: parent
         source: "../../assets/Orkki.png"
+
+        property list<Item> imagePoints: [
+            // this imagePoint can be used for creation of the rocket
+            // it must be far enough in front of the car that they don't collide upon creation
+            // the +30 might have to be adapted if the size of the rocket is changed
+            Item {x: orkki.width/2+20}
+        ]
     }
 
     Text {
         id: hp
-        anchors.centerIn: circleCollider
+        anchors.centerIn: enemyOrkki
         text: parent.hitPoints
+    }
+
+    MoveToPointHelper {
+        id: targetHelper
+        targetObject: enemyOrkki.target
+        rotationThreshold: 10
+        stopForwardMovementAtDifferentDirections: true
+        onDistanceToTargetChanged: {
+            if(distanceToTarget < 200){
+                shoot();
+            }
+        }
     }
 
     CircleCollider {
         id: circleCollider
         bodyType: Body.Dynamic
-        radius: enemyOrkki.width/2
+        radius: orkki.width/2
+        body.fixedRotation: false
+        density: 0.2
         x: -radius
         y: -radius
-        //categories: Circle.Category2
+        categories: Circle.Category1
         collidesWith: Box.Category1 | Circle.Category1
-        sleepingAllowed: false
+        force: Qt.point(targetHelper.outputYAxis * GameSettings.enemyMaxSpeed * world.pixelsPerMeter, 0)
+        torque: targetHelper.outputXAxis*1500 * world.pixelsPerMeter * world.pixelsPerMeter
+        body.linearDamping: 10
+        body.angularDamping: 15
     }
 
-    MovementAnimation {
-        target: enemyOrkki
-        property: "x"
-        running: true
-        velocity: enemyOrkki.velocity.x //(Math.cos((enemyOrkki.rotation-90) * Math.PI / 180.0) * speed)
-    }
+    //        onLinearVelocityChanged: {
+    //            if(targetHelper.outputYAxis === 0){
+    //                circleCollider.linearDamping = 10
+    //            }
+    //            else {
+    //                circleCollider.linearDamping = 0
+    //            }
 
-    MovementAnimation {
-        target: enemyOrkki
-        property: "y"
-        running: true
-        velocity: enemyOrkki.velocity.y //(Math.sin((enemyOrkki.rotation-90) * Math.PI / 180.0) * speed)
-    }
+    //            //        linearVelocity: Qt.point(targetHelper.outputYAxis * GameSettings.enemyMaxSpeed, targetHelper.outputXAxis*GameSettings.enemyMaxSpeed)
+    //        }
+
+
 
     Timer {
         id: enemyMovementTimer
-        interval: 2000 + (Math.random()*1000)
+        interval: 500
         running: true
         repeat: true
-        onTriggered: getRandomCoords()
+        onTriggered: console.log(circleCollider.linearVelocity)
+    }
 
+    //    PathMovement {
+    //        velocity: GameSettings.enemyMaxSpeed
+    //        waypoints: [
+    //            getRandomCoords(),
+    //            getRandomCoords(),
+    //            getRandomCoords()
+    //        ]
+    //    }
+
+    function shoot() {
+        var curTime = new Date().getTime()
+        var timeDiff = curTime - lastTime
+
+        if (timeDiff > 500) {
+            lastTime = curTime
+
+            var start = mapToItem(world,orkki.imagePoints[0].x, orkki.imagePoints[0].y)
+            console.log("MonsterShoot", start.x, start.y)
+            entityManager.createEntityFromUrlWithProperties(Qt.resolvedUrl("../entities/MonsterBullet.qml"), {
+                                                                "x" : start.x,
+                                                                "y" : start.y,
+                                                                "rotation" : enemyOrkki.rotation})
+        }
     }
 
     function getHit(dmg) {
@@ -85,26 +121,29 @@ EntityBase {
         else {
             hitPoints = hitPoints - dmg
             console.log(hitPoints)
-            hp.text = hitPoints
+            //            hp.text = hitPoints
         }
     }
 
-    function getRandomCoords () {
-        //            var xDest = Math.random() * levelBase.width
-        //            var yDest = Math.random() * levelBase.height
-        var Dest = Qt.point(Math.random() * areaWidth, Math.random() * areaHeight)
+    //    function getRandomCoords () {
+    //        //roamHelper.targetPoint =
+    //        return Qt.point(Math.random() * areaWidth, Math.random() * areaHeight)
+    //    }
 
-        var trueX = Dest.x - enemyOrkki.x
-        var trueY = enemyOrkki.y - Dest.y
-        var angle = Math.atan2(trueX, trueY)
-        var strictAngle = parseInt(angle * 180 / Math.PI);
+    //    function calcEnemyMovement() {
+    //        var Dest = Qt.point(Math.random() * areaWidth, Math.random() * areaHeight)
 
-        var rotation = enemyOrkki.rotation-90
+    //        var trueX = Dest.x - enemyOrkki.x
+    //        var trueY = enemyOrkki.y - Dest.y
+    //        var angle = Math.atan2(trueX, trueY)
+    //        var strictAngle = parseInt(angle * 180 / Math.PI);
 
-        var xDirection = Math.cos(rotation * Math.PI / 180.0) * speed
-        var yDirection = Math.sin(rotation * Math.PI / 180.0) * speed
+    //        var rotation = enemyOrkki.rotation-90
 
-        enemyOrkki.velocity = Qt.point(xDirection, yDirection)
-        enemyOrkki.rotation = strictAngle
-    }
+    //        var xDirection = Math.cos(rotation * Math.PI / 180.0) * speed
+    //        var yDirection = Math.sin(rotation * Math.PI / 180.0) * speed
+
+    //        enemyOrkki.velocity = Qt.point(xDirection, yDirection)
+    //        enemyOrkki.rotation = strictAngle
+    //    }
 }

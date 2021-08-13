@@ -1,25 +1,19 @@
 import QtQuick 2.0
 import Felgo 3.0
-import".."
+import ".."
 
 EntityBase {
     entityId: "character"
     entityType: "character"
     id: character
+    transformOrigin: Item.TopLeft
 
-    x: originX
-    y: originY
-
+    property int hitPoints: GameSettings.playerLife
     property int maxSpeed: GameSettings.playerMaxSpeed
     property alias controller: twoAxisController
-    property alias characterBody: characterBody
-//    property alias characterWeapon: characterWeapon
-//    property alias characterMuzzle: characterMuzzle
+    property point characterBodyImP: characterBody.imagePoints[0]
     property alias circleCollider: circleCollider
-    property double velocityX: twoAxisController.xAxis * maxSpeed
-    property double velocityY: twoAxisController.yAxis * (-maxSpeed)
-    property double originX
-    property double originY
+    property var world
 
 
     TwoAxisController {
@@ -30,68 +24,55 @@ EntityBase {
         id: characterBody
         width: 30
         height: 30
+        rotation: 90
         anchors.centerIn: parent
         source: "../../assets/Kypara.png"
+
+        property list<Item> imagePoints: [
+            Item {y: -characterBody.width/2-3}
+        ]
     }
 
     Text {
         id: hp
         anchors.centerIn: parent
-        text: player.hitPoints
+        text: hitPoints
     }
 
 
-    Rectangle {
-        id: characterWeapon
-        transformOrigin: Item.TopLeft
-        color: "transparent"
-        anchors.centerIn: player
-
-        Image{
-            id: characterMuzzle
-            width: 5
-            height: 40
-            anchors.centerIn: characterWeapon
-            source: "../../assets/AK-47.png"
-        }
+    Image{
+        id: characterMuzzle
+        width: 5
+        height: 40
+        anchors.centerIn: character
+        source: "../../assets/AK-47.png"
     }
 
     CircleCollider {
         id: circleCollider
         bodyType: Body.Dynamic
-        radius: 15
+        radius: characterBody.width/2
         x: -radius
         y: -radius
+        density: 1
+        //        friction: 1
+        fixedRotation: true
+        linearDamping: 10
+        bullet: true
         categories: Circle.Category1
-        collidesWith: Box.Category1 | Circle.category2
-        sleepingAllowed: false
+        collidesWith: Box.Category1 | Circle.category1
     }
 
-//    BoxCollider {
-//        id: boxCollider
-//        bodyType: Body.Dynamic
-//        width: characterMuzzle.width
-//        height: characterMuzzle.height
-//        anchors.centerIn: characterWeapon
-//        categories: Box.Category2
-//        collidesWith: Box.Category1
-//        bullet: true
-//        sleepingAllowed: false
-//    }
-
-    MovementAnimation {
-        target: character
-        property: "x"
-        running: true
-        velocity: character.velocityX //twoAxisController.xAxis * maxSpeed
-
+    function getHit(dmg){
+        hitPoints -= dmg
     }
 
-    MovementAnimation {
-        target: character
-        property: "y"
-        running: true
-        velocity: character.velocityY//twoAxisController.yAxis * (-maxSpeed)
+    function shoot() {
+        var start = mapToItem(world,characterBody.imagePoints[0].x,characterBody.imagePoints[0].y)
+        console.log("shoot", start.x, start.y)
+        entityManager.createEntityFromUrlWithProperties(Qt.resolvedUrl("../entities/Bullet.qml"), {
+                                                            "x" : start.x,
+                                                            "y" : start.y,
+                                                            "rotation" : character.rotation-90,})
     }
-
 }

@@ -6,9 +6,9 @@ QtObject {
     id: gameSettings
 
     //Movement Speeds
-    property int playerMaxSpeed: 200
-    property int enemyMaxSpeed: 100
-    property int akBulletSpeed: 400
+    property int playerMaxSpeed: 100
+    property int enemyMaxSpeed: 2000
+    property int akBulletSpeed: 250
     property int monsterBulletSpeed: 300
 
     //Lifes

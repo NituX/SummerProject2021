@@ -61,7 +61,6 @@ macx {
 }
 
 DISTFILES += \
-    qml/BalanceSettings.qml \
     qml/GameSettings.qml \
     qml/common/BaseScene.qml \
     qml/common/LevelBase.qml \

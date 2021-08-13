@@ -1,41 +1,36 @@
 import QtQuick 2.0
 import Felgo 3.0
+import ".."
 
 EntityBase {
     id: singleMonsterBullet
     entityType: "singleMonsterBullet"
-    x: start.x
-    y: start.y
+    property int damage: 20
+
+    Component.onCompleted: {
+        applyForwardImpulse();
+    }
 
     Image {
         id: singleMonsterBulletPic
-        anchors.fill: circleCollider
-        width: 5
-        height: 5
+        anchors.centerIn: circleCollider
         source: "../../assets/MonsterBullet.png"
+        width: 6
+        height: 6
     }
 
     CircleCollider {
         id: circleCollider
-        bodyType: Body.Dynamic
-        radius: 3
-        x: -radius
-        y: -radius
+        radius: singleMonsterBulletPic.width / 2
         body.bullet: true
         body.fixedRotation: false
-        collidesWith: Box.Category1 | Circle.Category1
 
         fixture.onBeginContact: {
             var collidedEntity = other.getBody().target;
             var otherEntityId = collidedEntity.entityId;
             var otherEntityParent = collidedEntity.parent;
 
-            if(otherEntityId.substring(0,4) === "char") {
-                singleMonsterBullet.destroy();
-                otherEntityParent.getHit(damage);
-            }
-
-            else if (otherEntityId.substring(0,4) === "enem") {
+            if(otherEntityId.substring(0,4) === "char" || otherEntityId.substring(0,4) === "enem") {
                 singleMonsterBullet.destroy();
                 collidedEntity.getHit(damage);
             }
@@ -46,5 +41,13 @@ EntityBase {
                 //animation here?
             }
         }
+    }
+    function applyForwardImpulse() {
+        var power = GameSettings.monsterBulletSpeed
+        var rad = singleMonsterBullet.rotation / 180 * Math.PI
+
+        //can't use body.toWorldVector() because the rotation is not instantly
+        var localForward = Qt.point(power * Math.cos(rad), power * Math.sin(rad))
+        circleCollider.body.applyLinearImpulse(localForward, circleCollider.body.getWorldCenter())
     }
 }

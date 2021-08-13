@@ -38,19 +38,19 @@ BaseScene {
         id: container
         transformOrigin: Item.TopLeft
 
-        PhysicsWorld {
-            id: world
-            running: true
-            z: 1000
-            // these are performance settings to avoid boxes colliding too far together
-            // set them as low as possible so it still looks good
-            updatesPerSecondForPhysics: 120
-            //velocityIterations: 5
-            //positionIterations: 5
-            // set this to true to see the debug draw of the physics system
-            // this displays all bodies, joints and forces which is great for debugging
-            debugDrawVisible: false
-        }
+//        PhysicsWorld {
+//            id: world
+//            running: true
+//            z: 0
+//            // these are performance settings to avoid boxes colliding too far together
+//            // set them as low as possible so it still looks good
+//            updatesPerSecondForPhysics: 60
+//            velocityIterations: 5
+//            positionIterations: 5
+//            // set this to true to see the debug draw of the physics system
+//            // this displays all bodies, joints and forces which is great for debugging
+//            debugDrawVisible: true
+//        }
 
         Loader {
             id: loader

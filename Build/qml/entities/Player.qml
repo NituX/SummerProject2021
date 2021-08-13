@@ -7,6 +7,8 @@ EntityBase {
     id: player
 
     property alias character: character
+    property alias charCirlce: character.circleCollider
+    property alias muzzle: character.characterBody
     property int hitPoints: GameSettings.playerLife
 
 

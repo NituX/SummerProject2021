@@ -41,7 +41,7 @@ GameWindow {
 
     EntityManager {
         id: entityManager
-        entityContainer: gameScene.entContainer
+        entityContainer: gameScene.container
     }
 
     GameScene {
