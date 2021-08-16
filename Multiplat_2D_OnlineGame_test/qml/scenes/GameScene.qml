@@ -12,6 +12,8 @@ BaseScene {
     // the currently loaded level gets stored here
     property var activeLevel
     property alias entContainer: container
+    property alias moveStick: movementStick
+    property alias rotateStick: rotateStick
 
     sceneAlignmentX: "left"
     sceneAlignmentY: "top"
@@ -34,6 +36,36 @@ BaseScene {
         //limitBottom: gameScene.activeLevel.height;
     }
 
+    JoystickControllerHUD {
+        id: movementStick
+        width: 30
+        height: 30
+        anchors.bottom: gameScene.gameWindowAnchorItem.bottom
+        anchors.left: gameScene.gameWindowAnchorItem.left
+        anchors.bottomMargin: 40
+        anchors.leftMargin: 40
+
+        z: 10
+        visible: true
+        source: "../../assets/joystick_background.png"
+        thumbSource: "../../assets/joystick_thumb.png"
+    }
+
+    JoystickControllerHUD {
+        id: rotateStick
+        width: 30
+        height: 30
+        anchors.bottom: gameScene.gameWindowAnchorItem.bottom
+        anchors.right: gameScene.gameWindowAnchorItem.right
+        anchors.bottomMargin: 40
+        anchors.rightMargin: 40
+
+        z: 10
+        visible: true
+        source: "../../assets/joystick_background.png"
+        thumbSource: "../../assets/joystick_thumb.png"
+    }
+
     Item {
         id: container
         transformOrigin: Item.TopLeft
@@ -51,6 +83,8 @@ BaseScene {
 //            // this displays all bodies, joints and forces which is great for debugging
 //            debugDrawVisible: true
 //        }
+
+
 
         Loader {
             id: loader
@@ -76,6 +110,7 @@ BaseScene {
                 gameScene.Keys.forwardTo = activeLevel.moveWithKeys
                 GameSettings.areaHeight = item.height
                 GameSettings.areaWidth = item.width
+                item.gameScene = gameScene
             }
         }
     }

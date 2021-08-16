@@ -2,6 +2,7 @@ import QtQuick 2.0
 import Felgo 3.0
 import ".."
 import "../entities"
+import "../scenes"
 
 Item {
     id: movement
@@ -9,6 +10,8 @@ Item {
     property var character
     property variant playerTwoAxisController: character.getComponent("TwoAxisController")
     property alias movementController: movementController
+    property var moveStick
+
     //    property alias updateMovement: updateMovement()
 
     property real newPosX: 0.0
@@ -19,6 +22,9 @@ Item {
 
     TwoAxisController {
         id: movementController
+
+        xAxis: moveStick.controllerXPosition
+        yAxis: moveStick.controllerYPosition
 
         onXAxisChanged: {
             newPosX = movementController.xAxis

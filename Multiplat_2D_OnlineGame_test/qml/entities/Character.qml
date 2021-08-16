@@ -14,6 +14,7 @@ EntityBase {
     property point characterBodyImP: characterBody.imagePoints[0]
     property alias circleCollider: circleCollider
     property var world
+    property real lastTime: 0
 
 
     TwoAxisController {
@@ -68,11 +69,19 @@ EntityBase {
     }
 
     function shoot() {
-        var start = mapToItem(world,characterBody.imagePoints[0].x,characterBody.imagePoints[0].y)
-        console.log("shoot", start.x, start.y)
-        entityManager.createEntityFromUrlWithProperties(Qt.resolvedUrl("../entities/Bullet.qml"), {
-                                                            "x" : start.x,
-                                                            "y" : start.y,
-                                                            "rotation" : character.rotation-90,})
+
+        var currentTime = new Date().getTime();
+        var timeDiff = currentTime-lastTime
+
+        if (timeDiff > 100) {
+            lastTime = currentTime
+
+            var start = mapToItem(world,characterBody.imagePoints[0].x,characterBody.imagePoints[0].y)
+            console.log("shoot", start.x, start.y)
+            entityManager.createEntityFromUrlWithProperties(Qt.resolvedUrl("../entities/Bullet.qml"), {
+                                                                "x" : start.x,
+                                                                "y" : start.y,
+                                                                "rotation" : character.rotation-90,})
+        }
     }
 }

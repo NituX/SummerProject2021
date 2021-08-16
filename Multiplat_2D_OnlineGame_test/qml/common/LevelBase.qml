@@ -8,7 +8,8 @@ Item {
     id: levelBase
 
     property alias character: character
-    property alias moveWithKeys: movement.movementController //player.character.controller
+    property alias moveWithKeys: movement.movementController
+    property var gameScene
     //property alias weapon: weapon
     property string levelName
     property int enemyCount: GameSettings.enemyCount
@@ -26,25 +27,46 @@ Item {
         entityContainer: levelBase
     }
 
+
+
+    Timer{
+        id: movementUpdateTimer
+        interval: 1000/30
+        running: true
+        repeat: true
+
+        property bool continousShoot: false
+
+        onTriggered: {
+            movement.updateMovement()
+            var vector = Qt.point(character.controller.xAxis*32*10, character.controller.yAxis*32*10)
+            character.circleCollider.applyLinearImpulse(vector, character.circleCollider.body.getWorldCenter());
+
+            if(continousShoot === true) {
+                character.shoot()
+            }
+        }
+    }
+
     PhysicsWorld {
         id: world
         running: true
-        z: 0
+        z: 10
+
         // these are performance settings to avoid boxes colliding too far together
         // set them as low as possible so it still looks good
-        updatesPerSecondForPhysics: 60
-        velocityIterations: 5
-        positionIterations: 5
+        autoClearForces: true
+        updatesPerSecondForPhysics: 30
+        velocityIterations: 2
+        positionIterations: 2
         // set this to true to see the debug draw of the physics system
         // this displays all bodies, joints and forces which is great for debugging
         debugDrawVisible: false
 
-        onStepped: {
-            movement.updateMovement()
-            var vector = Qt.point(character.controller.xAxis*32*5, character.controller.yAxis*32*5)
-            character.circleCollider.applyLinearImpulse(vector, character.circleCollider.body.getWorldCenter());
-        }
+        Component.onCompleted: Box2D.defaultWorld = world
     }
+
+
 
 
     Character {
@@ -57,6 +79,7 @@ Item {
     Movement {
         id: movement
         character: character
+        moveStick: gameScene.moveStick
     }
 
     Shoot {
@@ -64,6 +87,8 @@ Item {
         character: character
         charImg: character.characterBodyImP
         world: world
+        rotateStick: gameScene.rotateStick
+        shootTimer: movementUpdateTimer
     }
 
     MouseArea {
@@ -71,7 +96,13 @@ Item {
         anchors.fill: levelBase
         //propagateComposedEvents: true
         hoverEnabled: true
-        onClicked: character.shoot()
+
+        onPressed: {
+            movementUpdateTimer.continousShoot = true;
+            character.shoot();
+        }
+
+        onReleased: movementUpdateTimer.continousShoot = false;
 
         onPositionChanged: {
             //console.log("mouse position changed", mouse.x, mouse.y);
@@ -99,9 +130,9 @@ Item {
                     "world": world
                 }
 
-            entityManager.createEntityFromUrlWithProperties(
-                Qt.resolvedUrl("../entities/Enemy.qml"),
-                newEntityProperties);
+                entityManager.createEntityFromUrlWithProperties(
+                            Qt.resolvedUrl("../entities/Enemy.qml"),
+                            newEntityProperties);
 
                 GameSettings.enemyCount ++;
             }

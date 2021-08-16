@@ -100,7 +100,7 @@ EntityBase {
         var curTime = new Date().getTime()
         var timeDiff = curTime - lastTime
 
-        if (timeDiff > 500) {
+        if (timeDiff > 700) {
             lastTime = curTime
 
             var start = mapToItem(world,orkki.imagePoints[0].x, orkki.imagePoints[0].y)
