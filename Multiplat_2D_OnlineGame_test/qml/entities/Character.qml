@@ -11,7 +11,7 @@ EntityBase {
     property int hitPoints: GameSettings.playerLife
     property int maxSpeed: GameSettings.playerMaxSpeed
     property alias controller: twoAxisController
-    property point characterBodyImP: characterBody.imagePoints[0]
+    property var characterBodyImP: characterBody.imagePoints[0]
     property alias circleCollider: circleCollider
     property var world
     property real lastTime: 0
@@ -21,7 +21,7 @@ EntityBase {
         id: twoAxisController
     }
 
-    Image {
+    MultiResolutionImage {
         id: characterBody
         width: 30
         height: 30
@@ -30,13 +30,15 @@ EntityBase {
         source: "../../assets/Kypara.png"
 
         property list<Item> imagePoints: [
-            Item {y: -characterBody.width/2-3}
+            Item {y: -characterBody.width/2-7
+                x: +characterBody.width/2}
         ]
     }
 
     Text {
         id: hp
         anchors.centerIn: parent
+        font.pixelSize: 10
         text: hitPoints
     }
 
@@ -45,7 +47,9 @@ EntityBase {
         id: characterMuzzle
         width: 5
         height: 40
-        anchors.centerIn: character
+        anchors.right: characterBody.right
+        anchors.verticalCenter: characterBody.verticalCenter
+        anchors.verticalCenterOffset: -6
         source: "../../assets/AK-47.png"
     }
 
@@ -66,6 +70,10 @@ EntityBase {
 
     function getHit(dmg){
         hitPoints -= dmg
+
+        if(hitPoints <= 0) {
+            gameScene.gameOver()
+        }
     }
 
     function shoot() {

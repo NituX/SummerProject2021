@@ -9,10 +9,12 @@ Item {
 
     property alias character: character
     property alias moveWithKeys: movement.movementController
+    property alias mA:gameMA
     property var gameScene
     //property alias weapon: weapon
     property string levelName
     property int enemyCount: GameSettings.enemyCount
+    property int score
 
     Item {
         id: gameWindowAnchorItem
@@ -21,13 +23,6 @@ Item {
         width: gameScene.gameWindowAnchorItem.width
         height: gameScene.gameWindowAnchorItem.height
     }
-
-    EntityManager {
-        id: entityManager
-        entityContainer: levelBase
-    }
-
-
 
     Timer{
         id: movementUpdateTimer
@@ -40,6 +35,7 @@ Item {
         onTriggered: {
             movement.updateMovement()
             var vector = Qt.point(character.controller.xAxis*32*10, character.controller.yAxis*32*10)
+            console.log("moveTrigg" + vector)
             character.circleCollider.applyLinearImpulse(vector, character.circleCollider.body.getWorldCenter());
 
             if(continousShoot === true) {
@@ -48,26 +44,26 @@ Item {
         }
     }
 
+    Binding {
+        target: gameScene
+        property: "score"
+        value: levelBase.score
+    }
+
     PhysicsWorld {
         id: world
         running: true
         z: 10
 
-        // these are performance settings to avoid boxes colliding too far together
-        // set them as low as possible so it still looks good
         autoClearForces: true
         updatesPerSecondForPhysics: 30
         velocityIterations: 2
         positionIterations: 2
-        // set this to true to see the debug draw of the physics system
-        // this displays all bodies, joints and forces which is great for debugging
+
         debugDrawVisible: false
 
         Component.onCompleted: Box2D.defaultWorld = world
     }
-
-
-
 
     Character {
         id: character
@@ -93,6 +89,7 @@ Item {
 
     MouseArea {
         id: gameMA
+        enabled: false
         anchors.fill: levelBase
         //propagateComposedEvents: true
         hoverEnabled: true
@@ -120,23 +117,28 @@ Item {
         running: true
         repeat: true
 
+        property int enemyCount: 0
+        property int maxEnemyCount: GameSettings.enemyCount
+
         onTriggered: {
-            if (GameSettings.enemyCount <= 5) {
+            console.log(enemyCount)
+            if (enemyCount <= maxEnemyCount) {
 
                 var newEntityProperties = {
                     x: Math.random()*(levelBase.width-100)+50,
                     y: Math.random()*(levelBase.height-100)+50,
                     "target": character,
-                    "world": world
+                    "world": world,
+                    "creator": enemyCreationTimer,
+                    "levelBase" : levelBase
                 }
 
                 entityManager.createEntityFromUrlWithProperties(
                             Qt.resolvedUrl("../entities/Enemy.qml"),
                             newEntityProperties);
 
-                GameSettings.enemyCount ++;
+                enemyCount ++;
             }
         }
     }
-
 }

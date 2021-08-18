@@ -7,18 +7,18 @@ QtObject {
 
     //Movement Speeds
     property int playerMaxSpeed: 100
-    property int enemyMaxSpeed: 2000
+    property int enemyMaxSpeed: 3500
     property int akBulletSpeed: 250
     property int monsterBulletSpeed: 300
 
     //Lifes
     property int playerLife: 100
-    property int enemyLife: 50
+    property int enemyLife: 100
 
     //gameArea
     property int areaWidth: 0
     property int areaHeight: 0
 
     //enemycount
-    property int enemyCount: 0
+    property int enemyCount: 5
 }

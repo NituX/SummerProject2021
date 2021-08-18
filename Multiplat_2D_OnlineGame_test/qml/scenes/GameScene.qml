@@ -11,9 +11,10 @@ BaseScene {
     property string activeLevelFileName
     // the currently loaded level gets stored here
     property var activeLevel
-    property alias entContainer: container
+    property alias entContainer: loader
     property alias moveStick: movementStick
     property alias rotateStick: rotateStick
+    property int score: 0
 
     sceneAlignmentX: "left"
     sceneAlignmentY: "top"
@@ -24,11 +25,10 @@ BaseScene {
         activeLevelFileName = fileName
     }
 
-
     Camera {
         id: camera
         gameWindowSize: Qt.point(gameScene.gameWindowAnchorItem.width, gameScene.gameWindowAnchorItem.height)
-        entityContainer: container
+        entityContainer: entContainer
         //focusedObject: gameScene.activeLevel.player
         limitLeft: 0
         //limitRight: gameScene.activeLevel.width
@@ -38,53 +38,32 @@ BaseScene {
 
     JoystickControllerHUD {
         id: movementStick
-        width: 30
-        height: 30
-        anchors.bottom: gameScene.gameWindowAnchorItem.bottom
+        joystickRadius: 20
+        anchors.verticalCenter: gameScene.gameWindowAnchorItem.verticalCenter
         anchors.left: gameScene.gameWindowAnchorItem.left
-        anchors.bottomMargin: 40
-        anchors.leftMargin: 40
+        anchors.leftMargin: 50
 
         z: 10
-        visible: true
+        visible: system.debugBuild || system.isPlatform(System.IOS) || system.isPlatform(System.Android)
         source: "../../assets/joystick_background.png"
         thumbSource: "../../assets/joystick_thumb.png"
     }
 
     JoystickControllerHUD {
         id: rotateStick
-        width: 30
-        height: 30
-        anchors.bottom: gameScene.gameWindowAnchorItem.bottom
+        joystickRadius: 20
+        anchors.verticalCenter: gameScene.gameWindowAnchorItem.verticalCenter
         anchors.right: gameScene.gameWindowAnchorItem.right
-        anchors.bottomMargin: 40
-        anchors.rightMargin: 40
+        anchors.rightMargin: 50
 
         z: 10
-        visible: true
+        visible: system.debugBuild || system.isPlatform(System.IOS) || system.isPlatform(System.Android)
         source: "../../assets/joystick_background.png"
         thumbSource: "../../assets/joystick_thumb.png"
     }
 
     Item {
         id: container
-        transformOrigin: Item.TopLeft
-
-//        PhysicsWorld {
-//            id: world
-//            running: true
-//            z: 0
-//            // these are performance settings to avoid boxes colliding too far together
-//            // set them as low as possible so it still looks good
-//            updatesPerSecondForPhysics: 60
-//            velocityIterations: 5
-//            positionIterations: 5
-//            // set this to true to see the debug draw of the physics system
-//            // this displays all bodies, joints and forces which is great for debugging
-//            debugDrawVisible: true
-//        }
-
-
 
         Loader {
             id: loader
@@ -104,25 +83,39 @@ BaseScene {
                 //parent.height = item.height
                 // store the loaded level as activeLevel for easier access
                 gameScene.activeLevel = item
+                camera.entityContainer = item
                 camera.focusedObject = gameScene.activeLevel.character
                 camera.limitRight = gameScene.activeLevel.width
                 camera.limitBottom = gameScene.activeLevel.height
+
                 gameScene.Keys.forwardTo = activeLevel.moveWithKeys
                 GameSettings.areaHeight = item.height
                 GameSettings.areaWidth = item.width
+
+                if(system.isPlatform(System.Windows)) {
+                    item.mA.enabled = true
+                }
+
                 item.gameScene = gameScene
             }
         }
     }
 
-    /*Text {
+    //    Binding {
+    //        target: scoreText
+    //        property: "text"
+    //        value: "score: " + gameScene.score
+    //    }
+
+    Text {
+        id: scoreText
         anchors.left: gameScene.gameWindowAnchorItem.left
         anchors.leftMargin: 10
         anchors.top: gameScene.gameWindowAnchorItem.top
         anchors.topMargin: 10
         color: "white"
-        font.pixelSize: 20
-        text: activeLevel !== undefined ? activeLevel.levelName : ""
+        font.pixelSize: 10
+        text: "Score:" + gameScene.score
     }
 
     MenuButton {
@@ -133,9 +126,17 @@ BaseScene {
         anchors.top: gameScene.gameWindowAnchorItem.top
         anchors.topMargin: 10
         onClicked: {
-            backButtonPressed()
-            activeLevel = undefined
-            activeLevelFileName = ""
+            gameOver();
         }
-    }*/
+    }
+
+    function gameOver() {
+        //        var toRemove = ["singleBullet", "character", "enemy", "singleMonsterBullet"]
+        //        entityManager.removeEntitiesByFilter(toRemove)
+        //        entityManager.removeAllEntities()
+        //        entityManager.removeAllPooledEntities()
+        activeLevel = undefined
+        activeLevelFileName = ""
+        backButtonPressed()
+    }
 }

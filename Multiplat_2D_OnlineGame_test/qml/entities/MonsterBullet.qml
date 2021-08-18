@@ -30,7 +30,7 @@ EntityBase {
             var otherEntityId = collidedEntity.entityId;
             var otherEntityParent = collidedEntity.parent;
 
-            if(otherEntityId.substring(0,4) === "char" || otherEntityId.substring(0,4) === "enem") {
+            if(otherEntityId.substring(0,4) === "char") {
                 singleMonsterBullet.destroy();
                 collidedEntity.getHit(damage);
             }
@@ -46,7 +46,6 @@ EntityBase {
         var power = GameSettings.monsterBulletSpeed
         var rad = singleMonsterBullet.rotation / 180 * Math.PI
 
-        //can't use body.toWorldVector() because the rotation is not instantly
         var localForward = Qt.point(power * Math.cos(rad), power * Math.sin(rad))
         circleCollider.body.applyLinearImpulse(localForward, circleCollider.body.getWorldCenter())
     }

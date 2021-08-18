@@ -16,8 +16,8 @@ Item {
 
     property real newPosX: 0.0
     property real newPosY: 0.0
-//    property real oldPosX: 0.0
-//    property real oldPosY: 0.0
+    //    property real oldPosX: 0.0
+    //    property real oldPosY: 0.0
 
 
     TwoAxisController {
@@ -29,19 +29,19 @@ Item {
         onXAxisChanged: {
             newPosX = movementController.xAxis
             newPosY = movementController.yAxis
-//            updateMovement()
+            //            updateMovement()
         }
 
         onYAxisChanged: {
             newPosX = movementController.xAxis
             newPosY = movementController.yAxis
-//            updateMovement()
+            //            updateMovement()
         }
     }
 
     function updateMovement() {
-//        oldPosX = newPosX
-//        oldPosY = newPosY
+        //        oldPosX = newPosX
+        //        oldPosY = newPosY
 
         newPosX = newPosX * GameSettings.playerMaxSpeed
         newPosY = newPosY * GameSettings.playerMaxSpeed
@@ -49,13 +49,13 @@ Item {
         var velocity = Math.sqrt(newPosX * newPosX + newPosY * newPosY)
         var maxVelocity = GameSettings.playerMaxSpeed
 
-//        if (velocity > 0) {
-//            character.circleCollider.linearDamping = 0
-//        }
+        //        if (velocity > 0) {
+        //            character.circleCollider.linearDamping = 0
+        //        }
 
-//        else if (velocity === 0) {
-//            character.circleCollider.linearDamping = 1
-//        }
+        //        else if (velocity === 0) {
+        //            character.circleCollider.linearDamping = 1
+        //        }
 
         if(velocity > maxVelocity){
             var shrinkFactor = maxVelocity / velocity
@@ -63,6 +63,8 @@ Item {
             newPosY = newPosY * shrinkFactor
         }
 
+
+        console.log("calcMoveRdy" + newPosX + "" + -newPosY)
         playerTwoAxisController.xAxis = newPosX
         playerTwoAxisController.yAxis = -newPosY
     }

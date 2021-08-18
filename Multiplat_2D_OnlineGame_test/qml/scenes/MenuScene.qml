@@ -10,15 +10,13 @@ BaseScene {
     signal settingsPressed
     signal matchmakingPressed
 
-    // background
     Rectangle {
-        anchors.fill: parent.gameWindowAnchorItem
+        anchors.fill: menuScene
         color: "#47688e"
     }
 
-    // the "logo"
     Text {
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.horizontalCenter: menuScene.horizontalCenter
         y: 30
         font.pixelSize: 30
         color: "#e9e9e9"
@@ -27,15 +25,13 @@ BaseScene {
 
     // menu
     Column {
-        anchors.centerIn: parent
+        anchors.centerIn: menuScene
         spacing: 10
 
-        // TODO replace the buttons with your custom styled buttons
         MenuButton {
             text: "Play"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                // TODO load your levelselection scene here or start the game
                 selectWeaponPressed()
             }
         }
@@ -44,26 +40,17 @@ BaseScene {
             text: "Settings"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                // TODO load your settings scene here
                 settingsPressed()
             }
         }
 
-        MenuButton {
-            text: "Network"
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: {
-                networkPressed()
-            }
-        }
 
         MenuButton {
-            text: "Multiplayer"
+            text: "Quit"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                matchmakingPressed()
+                backButtonPressed()
             }
         }
-
     }
 }

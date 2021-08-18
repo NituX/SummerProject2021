@@ -12,11 +12,13 @@ EntityBase {
     property int hitPoints: GameSettings.enemyLife
     property int areaWidth: GameSettings.areaWidth
     property int areaHeight: GameSettings.areaHeight
+    property var creator
     property var target
     property var world
+    property var levelBase
     property real lastTime: 0
 
-    Image {
+    MultiResolutionImage {
         id: orkki
         width: 30
         height: 30
@@ -35,6 +37,7 @@ EntityBase {
     Text {
         id: hp
         anchors.centerIn: enemyOrkki
+        font.pixelSize: 10
         text: parent.hitPoints
     }
 
@@ -60,8 +63,8 @@ EntityBase {
         y: -radius
         categories: Circle.Category1
         collidesWith: Box.Category1 | Circle.Category1
-        force: Qt.point(targetHelper.outputYAxis * GameSettings.enemyMaxSpeed * world.pixelsPerMeter, 0)
-        torque: targetHelper.outputXAxis*1500 * world.pixelsPerMeter * world.pixelsPerMeter
+        force: Qt.point(targetHelper.outputYAxis * GameSettings.enemyMaxSpeed * 32, 0)
+        torque: targetHelper.outputXAxis*1500 * 32 * 32
         body.linearDamping: 10
         body.angularDamping: 15
     }
@@ -79,21 +82,12 @@ EntityBase {
 
 
 
-    Timer {
-        id: enemyMovementTimer
-        interval: 500
-        running: true
-        repeat: true
-        onTriggered: console.log(circleCollider.linearVelocity)
-    }
-
-    //    PathMovement {
-    //        velocity: GameSettings.enemyMaxSpeed
-    //        waypoints: [
-    //            getRandomCoords(),
-    //            getRandomCoords(),
-    //            getRandomCoords()
-    //        ]
+    //    Timer {
+    //        id: enemyMovementTimer
+    //        interval: 500
+    //        running: true
+    //        repeat: true
+    //        onTriggered: console.log(circleCollider.linearVelocity)
     //    }
 
     function shoot() {
@@ -115,7 +109,8 @@ EntityBase {
     function getHit(dmg) {
         if(hitPoints - dmg <= 0) {
             enemyOrkki.destroy()
-            GameSettings.enemyCount --
+            levelBase.score ++
+            creator.enemyCount --
         }
 
         else {

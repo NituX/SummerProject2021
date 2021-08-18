@@ -73,15 +73,12 @@ DISTFILES += \
     qml/entities/Enemy.qml \
     qml/entities/MonsterBullet.qml \
     qml/entities/Wall.qml \
-    qml/entities/Weapon_AK.qml \
-    qml/jsScripts/GameLoop.js \
     qml/levels/Level1.qml \
     qml/levels/Level2.qml \
     qml/qmldir \
-    qml/scenes/GameNetworkScene.qml \
+    qml/scenes/GameOverScene.qml \
     qml/scenes/GameScene.qml \
     qml/scenes/MenuScene.qml \
-    qml/scenes/MultiplayerScene.qml \
     qml/scenes/SelectWeaponScene.qml \
     qml/scenes/SettingsScene.qml
 
